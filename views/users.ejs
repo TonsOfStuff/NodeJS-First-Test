@@ -1,5 +1,6 @@
 <div>life</div>
-<ul>
-    <li>T</li>
-    <li>J</li>
-</ul>
+<% sampData.forEach(element => { %>
+    <ul>
+        <li><%-sampData[0].Name%> <%-sampData[0].Username%></li>
+    </ul>
+<% }); %>
