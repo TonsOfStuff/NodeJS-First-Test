@@ -1,6 +1,16 @@
 <div>life</div>
 <% sampData.forEach(element => { %>
     <ul>
-        <li><%-sampData[0].Name%> <%-sampData[0].Username%></li>
+        <li><%-element.Name%> <%-element.Username%></li>
     </ul>
 <% }); %>
+
+<form method="post">
+    <label>Name</label>
+    <input type = "text" name="name">
+
+    <label>Username</label>
+    <input type = "text" name="username">
+
+    <input type="submit" value="Submit">
+</form>
