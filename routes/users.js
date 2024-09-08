@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const argon = require("argon2");
 const app = express.Router();
 
 
@@ -47,12 +48,13 @@ app.post("/submit", (req, res) => {
     });
 });
 
-app.post("/", (req, res) => {
+app.post ("/", async (req, res) => {
     const name = req.body.name;
     const username = req.body.username;
     const password = req.body.password;
+    const securePass = await argon.hash(password);
 
-    let query = `INSERT INTO users (Name, Username, Password) VALUES ('${name}', '${username}', '${password}')`
+    let query = `INSERT INTO users (Name, Username, Password) VALUES ('${name}', '${username}', '${securePass}')`
     db.query(query, (error) =>{
         if (error){
             throw error;
