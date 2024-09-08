@@ -40,10 +40,8 @@ app.post("/submit", (req, res) => {
 
         const user = data.find(element => element.Username === username && element.password === password);
         if (user) {
-            console.log("Log in successful");
-            return res.render("mainPage.ejs"); 
+            return res.render("loginPage.ejs", {sampData: user}); 
         } else {
-            console.log("Failed Log In");
             return res.status(401).send("Login failed: invalid username or password");
         }
     });
