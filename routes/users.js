@@ -55,8 +55,6 @@ app.post("/submit", async (req, res) => {
 
             if (isPasswordValid) {
                 // Password is valid, render the login page
-                localStorage.setItem("live", "true");
-
                 return res.render("loginPage.ejs", { sampData: username });
             } else {
                 // Password is invalid
