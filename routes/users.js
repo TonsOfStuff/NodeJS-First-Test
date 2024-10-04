@@ -23,30 +23,51 @@ app.get("/", (req, res) => {
     });
 })
 
-app.post("/submit", (req, res) => {
+app.post("/submit", async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
+    // Check if username and password are provided
     if (!username || !password) {
         console.log("Username or password not provided");
         return res.status(400).send("Username and password are required");
     }
 
-    const query = "SELECT * FROM users";
-    db.query(query, (error, data) => {
-        if (error) {
-            console.error("Database query error: ", error);
-            return res.status(500).send("Internal server error");
-        }
+    try {
+        // Query to find the user by username
+        const query = "SELECT password_hash FROM encodedPass WHERE username = ?";
+        db.query(query, [username], async (error, results) => {
+            if (error) {
+                console.error("Database query error: ", error);
+                return res.status(500).send("Internal server error");
+            }
 
-        const user = data.find(element => element.Username === username && element.password === password);
-        if (user) {
-            return res.render("loginPage.ejs", {sampData: user}); 
-        } else {
-            return res.status(401).send("Login failed: invalid username or password");
-        }
-    });
+            if (results.length === 0) {
+                // If no user is found with the provided username
+                return res.status(404).send("User not found");
+            }
+
+            // Retrieve the stored password hash
+            const storedHash = results[0].password_hash;
+
+            // Verify the provided password against the stored hash
+            const isPasswordValid = await argon.verify(storedHash, password);
+
+            if (isPasswordValid) {
+                // Password is valid, render the login page
+                return res.render("loginPage.ejs", { sampData: username });
+            } else {
+                // Password is invalid
+                return res.status(401).send("Login failed: invalid username or password");
+            }
+        });
+    } catch (err) {
+        // Catch any unexpected errors
+        console.error("Unexpected error: ", err);
+        return res.status(500).send("Internal server error");
+    }
 });
+
 
 app.post ("/", async (req, res) => {
     const name = req.body.name;
