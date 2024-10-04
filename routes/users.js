@@ -54,8 +54,17 @@ app.post ("/", async (req, res) => {
     const password = req.body.password;
     const securePass = await argon.hash(password);
 
-    let query = `INSERT INTO users (Name, Username, Password) VALUES ('${name}', '${username}', '${securePass}')`
+    //Insert user into user table
+    let query = `INSERT INTO users (Name, Username) VALUES ('${name}', '${username}')`
     db.query(query, (error) =>{
+        if (error){
+            throw error;
+        }
+    })
+
+    //Insert encodedPass to seperate table
+    query = `INSERT INTO encodedPass (username, password_hash) VALUES ('${username}', '${securePass}')`
+    db.query(query, (error) => {
         if (error){
             throw error;
         }
