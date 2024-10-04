@@ -3,6 +3,8 @@ const argon = require("argon2");
 const bodyParser = require("body-parser");
 const app = express.Router();
 
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); //Middleware for posting

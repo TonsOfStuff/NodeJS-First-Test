@@ -1,6 +1,9 @@
+require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const argon = require("argon2");
+const jwt = require("jsonwebtoken");
 const app = express.Router();
 
 
@@ -11,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("../models/database")
 
-app.get("/", (req, res) => {
+app.get("/", (req, res) => { //Upon loading the login page
     const query = "SELECT * FROM users";
 
     db.query(query, (error, data) => {
@@ -54,8 +57,12 @@ app.post("/submit", async (req, res) => {
             const isPasswordValid = await argon.verify(storedHash, password);
 
             if (isPasswordValid) {
-                // Password is valid, render the login page
-                return res.render("loginPage.ejs", { sampData: username });
+                const user = {"username": username};
+
+                const auth = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET) //Generates the token
+                res.cookie('authToken', auth, { httpOnly: true, secure: true, sameSite: 'strict' });
+
+                return res.render("loginPage.ejs", { sampData: username});
             } else {
                 // Password is invalid
                 return res.status(401).send("Login failed: invalid username or password");
@@ -68,7 +75,16 @@ app.post("/submit", async (req, res) => {
     }
 });
 
+//Middleware for JWT to authenticate the user when they make requests
+function jwtMiddleWare(req, res, next){
+    const token = req.cookies.authToken;
+    if (token === null) return res.sendStatus(401);
 
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
+        if (error) return res.sendStatus(403);
+        req.user = user;
+        next();
+    })
+}   
 
-
-module.exports = app;
+module.exports = {app, jwtMiddleWare};
