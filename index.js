@@ -4,6 +4,7 @@ const expressLayouts = require('express-ejs-layouts');
 
 const serverRouter = require('./routes/server'); //Telling our app that the router folder and routes folder exists
 const userRouter = require('./routes/users');
+const signupRouter = require('./routes/signup');
 
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views"); //Server rending views
@@ -13,6 +14,7 @@ app.use(express.static('public'));
 
 app.use("/", serverRouter);
 app.use("/users", userRouter);
+app.use("/signup", signupRouter);
 
 app.listen(process.env.PORT || 3000);
 

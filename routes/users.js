@@ -55,6 +55,8 @@ app.post("/submit", async (req, res) => {
 
             if (isPasswordValid) {
                 // Password is valid, render the login page
+                localStorage.setItem("live", "true");
+
                 return res.render("loginPage.ejs", { sampData: username });
             } else {
                 // Password is invalid
@@ -69,29 +71,6 @@ app.post("/submit", async (req, res) => {
 });
 
 
-app.post ("/", async (req, res) => {
-    const name = req.body.name;
-    const username = req.body.username;
-    const password = req.body.password;
-    const securePass = await argon.hash(password);
 
-    //Insert user into user table
-    let query = `INSERT INTO users (Name, Username) VALUES ('${name}', '${username}')`
-    db.query(query, (error) =>{
-        if (error){
-            throw error;
-        }
-    })
-
-    //Insert encodedPass to seperate table
-    query = `INSERT INTO encodedPass (username, password_hash) VALUES ('${username}', '${securePass}')`
-    db.query(query, (error) => {
-        if (error){
-            throw error;
-        }
-    })
-
-    res.redirect(303, "/users")
-})
 
 module.exports = app;
