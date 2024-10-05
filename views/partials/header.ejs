@@ -1,7 +1,18 @@
 <header>
     <ul>
         <li><a href = "/">Home</a></li>
-        <li><a href = "/users">Login</a></li>
-        <li><a href = "/signup">Sign up</a></li>
+        <%try {%>
+            <%if (isLogged === false) {%>
+                <li><a href = "/users">Login</a></li>
+                <li><a href = "/signup">Sign up</a></li>
+            <%} else {%>
+                <li><a href = "/homepage">Your Account</a></li>
+                <li><a href = "/users/logout">Logout</a></li>
+            <%}%>
+        <%} catch {%>
+            <li><a href = "/users">Login</a></li>
+            <li><a href = "/signup">Sign up</a></li>
+        <%}%>
+        
     </ul>
 </header>

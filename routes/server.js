@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const {jwtMiddleWare} = require("./users")
+const {jwtMiddleWareHome} = require("./users")
 
-router.get("/", jwtMiddleWare, (req, res) => {
-    res.render("mainPage.ejs");
+router.get("/", jwtMiddleWareHome, (req, res) => {
+    res.render("mainPage.ejs", {isLogged: req.isLogged});
 })
 
 

@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const serverRouter = require('./routes/server'); //Telling our app that the router folder and routes folder exists
 const userRouter = require('./routes/users').app;
 const signupRouter = require('./routes/signup');
+const loggedInHome = require('./routes/loggedInHomepage');
 
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views"); //Server rending views
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use("/", serverRouter);
 app.use("/users", userRouter);
 app.use("/signup", signupRouter);
+app.use("/homepage", loggedInHome);
 
 app.listen(process.env.PORT || 3000);
 

@@ -62,7 +62,7 @@ app.post("/submit", async (req, res) => {
                 const auth = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET) //Generates the token
                 res.cookie('authToken', auth, { httpOnly: true, secure: true, sameSite: 'strict' });
 
-                return res.render("loginPage.ejs", { sampData: username});
+                return res.render("loginPage.ejs", { sampData: username, isLogged: true});
             } else {
                 // Password is invalid
                 return res.status(401).send("Login failed: invalid username or password");
@@ -75,8 +75,15 @@ app.post("/submit", async (req, res) => {
     }
 });
 
+app.get("/logout", (req, res) => {
+    res.clearCookie("authToken", {httpOnly: true, secure: true});
+
+    res.redirect("/")
+})
+
+
 //Middleware for JWT to authenticate the user when they make requests
-function jwtMiddleWare(req, res, next){
+function jwtMiddleWare(req, res, next){ //Access middleware
     const token = req.cookies.authToken;
     if (token === null) return res.sendStatus(401);
 
@@ -87,4 +94,22 @@ function jwtMiddleWare(req, res, next){
     })
 }   
 
-module.exports = {app, jwtMiddleWare};
+function jwtMiddleWareHome(req, res, next){ //Access middleware
+    const token = req.cookies.authToken;
+    if (token === null) {
+        req.isLogged = false;
+        next();
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
+        if (error) {
+            req.isLogged = false;
+            next();
+        }
+        req.isLogged = true;
+        req.user = user;
+        next();
+    })
+}   
+
+module.exports = {app, jwtMiddleWare, jwtMiddleWareHome};
