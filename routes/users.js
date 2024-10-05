@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("../models/database")
 
-app.get("/", (req, res) => { //Upon loading the login page
+app.get("/", jwtAlrLoggedNoAgain, (req, res) => { //Upon loading the login page
     const query = "SELECT * FROM users";
 
     db.query(query, (error, data) => {
@@ -62,7 +62,7 @@ app.post("/submit", async (req, res) => {
                 const auth = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET) //Generates the token
                 res.cookie('authToken', auth, { httpOnly: true, secure: true, sameSite: 'strict' });
 
-                return res.render("loginPage.ejs", { sampData: username, isLogged: true});
+                return res.redirect("/homepage");
             } else {
                 // Password is invalid
                 return res.status(401).send("Login failed: invalid username or password");
@@ -96,15 +96,16 @@ function jwtMiddleWare(req, res, next){ //Access middleware
 
 function jwtMiddleWareHome(req, res, next){ //Access middleware
     const token = req.cookies.authToken;
-    if (token === null) {
+    console.log(token);
+    if (token === undefined) {
         req.isLogged = false;
-        next();
+        return res.render("mainPage.ejs");
     }
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
         if (error) {
             req.isLogged = false;
-            next();
+            return res.render("mainPage.ejs");
         }
         req.isLogged = true;
         req.user = user;
@@ -112,4 +113,22 @@ function jwtMiddleWareHome(req, res, next){ //Access middleware
     })
 }   
 
-module.exports = {app, jwtMiddleWare, jwtMiddleWareHome};
+function jwtAlrLoggedNoAgain(req, res, next){ //Can't access login or sign up page if you already are logged in
+    const token = req.cookies.authToken;
+    if (token === undefined) {
+        req.isLogged = false;
+        return next();
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
+        if (error) {
+            req.isLogged = false;
+            return next();
+        }
+        req.isLogged = true;
+        req.user = user;
+        return res.redirect("/homepage");
+    })
+}   
+
+module.exports = {app, jwtMiddleWare, jwtMiddleWareHome, jwtAlrLoggedNoAgain};

@@ -3,7 +3,7 @@ const argon = require("argon2");
 const bodyParser = require("body-parser");
 const app = express.Router();
 
-
+const {jwtAlrLoggedNoAgain} = require("./users")
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("../models/database")
 
-app.get("/", (req, res) => {
+app.get("/", jwtAlrLoggedNoAgain, (req, res) => {
     res.render("signup.ejs")
 })
 

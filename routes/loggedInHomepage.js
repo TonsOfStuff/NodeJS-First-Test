@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express.Router();
 
-app.get("/", (req, res) => {
+const {jwtMiddleWareHome} = require("./users")
+
+app.get("/", jwtMiddleWareHome, (req, res) => {
     res.render("loginPage.ejs", {sampData: res.username, isLogged: res.isLogged});
 })
 
