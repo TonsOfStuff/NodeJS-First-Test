@@ -1,8 +1,10 @@
+require("dotenv").config();
+
 const express = require('express');
 const app = express();
 const expressLayouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser');
-
+const session = require("express-session");
 
 
 const serverRouter = require('./routes/server'); //Telling our app that the router folder and routes folder exists
@@ -17,10 +19,17 @@ app.use(expressLayouts);
 app.use(express.static('public'));
 app.use(cookieParser());
 
+app.use(session({
+    secret: process.env.SESSION_CODE,
+    resave: false,
+    saveUninitialized: true,
+}));
+
 app.use("/", serverRouter);
 app.use("/users", userRouter);
 app.use("/signup", signupRouter);
 app.use("/homepage", loggedInHome);
+
 
 app.listen(process.env.PORT || 3000);
 

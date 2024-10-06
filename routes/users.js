@@ -62,6 +62,7 @@ app.post("/submit", async (req, res) => {
                 const auth = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET) //Generates the token
                 res.cookie('authToken', auth, { httpOnly: true, secure: true, sameSite: 'strict' });
 
+                req.session.results = [username];
                 return res.redirect("/homepage");
             } else {
                 // Password is invalid
@@ -96,7 +97,6 @@ function jwtMiddleWare(req, res, next){ //Access middleware
 
 function jwtMiddleWareHome(req, res, next){ //Access middleware
     const token = req.cookies.authToken;
-    console.log(token);
     if (token === undefined) {
         req.isLogged = false;
         return res.render("mainPage.ejs");
