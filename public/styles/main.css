@@ -13,7 +13,7 @@ body{
 header ul{
     margin: 0px;
     display: grid;
-    grid-template-columns: 3fr 1fr 1fr 1fr;
+    grid-template-columns: 8fr 1fr 1fr 1fr;
     align-items: center;
     height: 100%;
 
@@ -37,6 +37,7 @@ header{
     height: 100px;
     padding: 10px;
 }
+
 
 header::after{
     content: "";
@@ -64,4 +65,22 @@ footer::before{
     background-color: black;
     height: 1.5px;
     transform: translateY(-10px);
+}
+
+
+#signupButton{
+    background-color: rgb(208, 208, 208);
+    border-radius: 20px;
+    padding: 12px;
+}
+
+#signupButton:hover{
+    background-color: rgb(251, 255, 144);
+}
+
+
+@media only screen and (max-width: 650px) {
+    header ul{
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
 }
